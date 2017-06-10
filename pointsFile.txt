@@ -1,0 +1,5 @@
+Username	Points
+rtyo28		0
+john		0
+James		1000
+RUKO		-7389

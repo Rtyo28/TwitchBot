@@ -28,7 +28,7 @@ class points:
         if index >= 0:
             self.points[index] += difference
         else:
-            print 'User ' + user + ' not found while attempting to change user points.'
+            print('User ' + user + ' not found while attempting to change user points.')
 
     def returnPoints(self, user):
         try:
@@ -42,11 +42,12 @@ class points:
             return 'User ' + user + ' not found while attempting find points.'
 
     def saveData(self, filename):
-        fileout = open(filename, 'w+')
+        fileout = open(filename, 'w')
         fileout.write('Username\tPoints\n')
         for u in self.user:
             i = self.getIndex(u)
             fileout.write(u + '\t\t' + str(self.points[i]) + '\n')
+        fileout.close()
 
     def readData(self, filename):
         with open(filename) as f:

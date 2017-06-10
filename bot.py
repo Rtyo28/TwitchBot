@@ -27,7 +27,7 @@ import datetime
 import socket
 import select
 import re
-from StoreData import points
+from TwitchBot.StoreData import points
 
 ''' Change the following settings if you wish to run the program '''
 channels = ['rtrobot']
@@ -38,31 +38,31 @@ oauth = 'oauth:9wu990bid5t4uojye2bkfbud4zpzg7'
 # Definitions to use while connected
 def ping():
     # Respond to the server 'pinging' (Stays connected)
-    socks[0].send('PONG :pingis\n')
+    socks[0].send('PONG :pingis\n'.encode())
     print('PONG: Client > tmi.twitch.tv')
 
 
 def sendmsg(chan, msg):
     # Send specified message to the channel
-    socks[0].send('PRIVMSG '+chan+' :'+msg+'\n')
+    socks[0].send(('PRIVMSG '+chan+' :'+msg+'\n').encode())
     print('[BOT] -> '+chan+': '+msg+'\n')
 
 
 def sendwhis(user, msg):
-    socks[1].send('PRIVMSG #jtv :/w '+user+' '+msg+'\n')
+    socks[1].send(('PRIVMSG #jtv :/w '+user+' '+msg+'\n').encode())
     print('[BOT] -> '+user+': '+msg+'\n')
 
 
 def getmsg(msg):
     # GET IMPORTANT MESSAGE
-    if re.findall('@(.*).tmi.twitch.tv PRIVMSG (.*) :(.*)', msg):
-        msg_edit = msg.split(':', 2)
+    if re.findall('@(.*).tmi.twitch.tv PRIVMSG (.*) :(.*)'.encode(), msg):
+        msg_edit = msg.split(':'.encode(), 2)
         if len(msg_edit) > 2:
-            user = msg_edit[1].split('!', 1)[0]                  # User
+            user = msg_edit[1].split('!'.encode(), 1)[0]                  # User
             message = msg_edit[2]                               # Message
-            channel = re.findall('PRIVMSG (.*)', msg_edit[1])    # Channel
+            channel = re.findall('PRIVMSG (.*)'.encode(), msg_edit[1])    # Channel
 
-            privmsg = re.findall('@(.*).tmi.twitch.tv PRIVMSG (.*) :(.*)', msg)
+            privmsg = re.findall('@(.*).tmi.twitch.tv PRIVMSG (.*) :(.*)'.encode(), msg)
             ''' CONVERT TO ARRAY '''
             privmsg = [x for xs in privmsg for x in xs]
 
@@ -71,10 +71,10 @@ def getmsg(msg):
             ''' PRINT TO CONSOLE '''
             if len(privmsg) > 0:
                 print('[' + str(datelog.hour) + ':' + str(datelog.minute)+':' +
-                      str(datelog.second) + '] ' + user + ' @ ' + channel[0][:-1] + ': ' + message)
+                      str(datelog.second) + '] ' + user.decode() + ' @ ' + channel[0][:-1].decode() + ': ' + message.decode())
                 
-    if re.findall('@(.*).tmi.twitch.tv WHISPER (.*) :(.*)', msg):
-        whisper = re.findall('@(.*).tmi.twitch.tv WHISPER (.*) :(.*)', msg)
+    if re.findall('@(.*).tmi.twitch.tv WHISPER (.*) :(.*)'.encode(), msg):
+        whisper = re.findall('@(.*).tmi.twitch.tv WHISPER (.*) :(.*)'.encode(), msg)
         whisper = [x for xs in whisper for x in xs]
 
         ''' PRINT TO CONSOLE '''
@@ -90,15 +90,15 @@ socks[0].connect(('irc.twitch.tv', 6667))
 # socks[1].connect(('GROUP_CHAT_IP',GROUP_CHAT_PORT))
 
 '''Authenticate with the server '''
-socks[0].send('PASS '+oauth+'\n')
+socks[0].send(('PASS '+oauth+'\n').encode())
 # socks[1].send('PASS OAUTH_TOKEN\n')
 ''' Assign the client with the nick '''
-socks[0].send('NICK '+username+'\n')
+socks[0].send(('NICK '+username+'\n').encode())
 # socks[1].send('NICK USER\n')
 
 ''' Join the specified channel '''
 for val in channels:
-    socks[0].send('JOIN #'+val+'\n')
+    socks[0].send(('JOIN #'+val+'\n').encode())
 # socks[1].send('JOIN GROUP_CHAT_CHANNEL\n')
 
 ''' Send special requests to the server '''
@@ -111,11 +111,14 @@ print('OAUTH: oauth:'+'*'*30)
 print('\n')
 
 p = points()
-p.readData('pointsFile')
+p.readData('pointsFile.txt')
 
 temp = 0
 
 while True:
+    # Save user data
+    p.saveData('pointsFile.txt')
+
     (sread, swrite, sexc) = select.select(socks, socks, [], 120)
     for sock in sread:
         ''' Receive data from the server '''
@@ -126,7 +129,7 @@ while True:
                 print('Connection might have been terminated')
     
         ''' Remove any linebreaks from the message '''
-        msg = msg.strip('\n\r')
+        msg = msg.strip(('\n\r').encode())
 
         ''' DISPLAY MESSAGE IN SHELL '''
         getmsg(msg)
@@ -134,21 +137,21 @@ while True:
 
         # ANYTHING TO DO WITH CHAT FROM CHANNELS
         ''' GET THE INFO FROM THE SERVER '''
-        check = re.findall('@(.*).tmi.twitch.tv PRIVMSG (.*) :(.*)', msg)
+        check = re.findall('@(.*).tmi.twitch.tv PRIVMSG (.*) :(.*)'.encode(), msg)
         if len(check) > 0:
-            msg_edit = msg.split(':', 2)
+            msg_edit = msg.split(':'.encode(), 2)
             if len(msg_edit) > 2:
-                user = msg_edit[1].split('!', 1)[0]             # User
-                message = msg_edit[2]                           # Message
-                channel = msg_edit[1].split(' ', 2)[2][:-1]     # Channel
+                user = msg_edit[1].split('!'.encode(), 1)[0]             # User
+                message = msg_edit[2]                                    # Message
+                channel = msg_edit[1].split(' '.encode(), 2)[2][:-1]     # Channel
 
-                msg_split = str.split(message)
+                msg_split = str.split(message.decode())
 
-                if message == '!join':
-                    sendmsg('#rtrobot', p.addUser(user, 0))
+                if message.decode() == '!join':
+                    sendmsg('#rtrobot', p.addUser(user.decode(), 0))
 
         # ANYTHING TO DO WITH WHISPERS RECIEVED FROM USERS
-        check = re.findall('@(.*).tmi.twitch.tv WHISPER (.*) :(.*)', msg)
+        check = re.findall('@(.*).tmi.twitch.tv WHISPER (.*) :(.*)'.encode(), msg)
         if len(check) > 0:
             msg_edit = msg.split(':', 2)
             if len(msg) > 2:
@@ -159,6 +162,6 @@ while True:
                 whis_split = str.split(message)
 
         ''' Respond to server pings '''
-        if msg.find('PING :') != -1:
+        if msg.find('PING :'.encode()) != -1:
             print('PING: tmi.twitch.tv > Client')
             ping()
