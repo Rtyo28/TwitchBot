@@ -6,6 +6,7 @@ class Residence:
         self.cost = 50
         self.production = 10
         self.type = 'gold'
+        self.name = 'residence'
 
     def setProduction(self, north, south, east, west):
         self.production = 10
@@ -17,6 +18,16 @@ class Residence:
             self.production += 5
         if west == 'residence':
             self.production += 5
+        return self.production, self.type
+
+    def getName(self):
+        return self.name
+
+    def getProduction(self):
+        return self.production
+
+    def getCost(self):
+        return self.cost
 
 class Farm:
 
@@ -26,6 +37,7 @@ class Farm:
         self.cost = 10
         self.production = 10
         self.type = 'food'
+        self.name = 'farm'
 
     def setProduction(self, north, south, east, west):
         self.production = 10
@@ -37,7 +49,16 @@ class Farm:
             self.production += 5
         if west == 'river':
             self.production += 5
+        return self.production, self.type
 
+    def getName(self):
+        return self.name
+
+    def getProduction(self):
+        return self.production
+
+    def getCost(self):
+        return self.cost
 
 class Lumbermill:
 
@@ -47,15 +68,26 @@ class Lumbermill:
         self.cost = 50
         self.production = 10
         self.type = 'wood'
+        self.name = 'lumbermill'
 
     def setProduction(self, north, south, east, west):
         self.production = 10
-        if north == 'river':
+        if north == 'forest':
             self.production += 5
-        if south == 'river':
+        if south == 'forest':
             self.production += 5
-        if east == 'river':
+        if east == 'forest':
             self.production += 5
-        if west == 'river':
+        if west == 'forest':
             self.production += 5
+        return self.production, self.type
+
+    def getName(self):
+        return self.name
+
+    def getProduction(self):
+        return self.production
+
+    def getCost(self):
+        return self.cost
 
