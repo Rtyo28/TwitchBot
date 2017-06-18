@@ -6,17 +6,17 @@ class Residence:
         self.cost = 50
         self.production = 10
         self.type = 'gold'
-        self.name = 'residence'
+        self.name = 'Residence'
 
     def setProduction(self, north, south, east, west):
         self.production = 10
-        if north == 'residence':
+        if north == 'R':
             self.production += 5
-        if south == 'residence':
+        if south == 'R':
             self.production += 5
-        if east == 'residence':
+        if east == 'R':
             self.production += 5
-        if west == 'residence':
+        if west == 'R':
             self.production += 5
         return self.production, self.type
 
@@ -37,7 +37,7 @@ class Farm:
         self.cost = 10
         self.production = 10
         self.type = 'food'
-        self.name = 'farm'
+        self.name = 'Farm'
 
     def setProduction(self, north, south, east, west):
         self.production = 10
@@ -68,7 +68,7 @@ class Lumbermill:
         self.cost = 50
         self.production = 10
         self.type = 'wood'
-        self.name = 'lumbermill'
+        self.name = 'Lumbermill'
 
     def setProduction(self, north, south, east, west):
         self.production = 10
